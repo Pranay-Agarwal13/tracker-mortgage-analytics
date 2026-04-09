@@ -342,7 +342,7 @@ ui <- fluidPage(
                 )
               ),
               tags$hr(style="margin:30px 0; max-width:100%; border-top: 1px solid #eee;"),
-              h5("Amortization Preview (First 5 Periods)", style="font-weight:700; margin-bottom:20px;"),
+              h5("Complete Amortization Schedule", style="font-weight:700; margin-bottom:20px;"),
               tableOutput("amortization_table")
           )
         )
@@ -436,7 +436,7 @@ server <- function(input, output, session) {
   })
   
   output$amortization_table <- renderTable({
-    # Build a fake amortization table taking the first 5 records
+    # Build complete amortization table
     emi <- emi_calc()
     P <- as.numeric(input$loans_calc_amount)
     r <- (as.numeric(input$loans_calc_rate) / 100) / 12
@@ -446,7 +446,10 @@ server <- function(input, output, session) {
     out <- data.frame(Period=integer(), Payment=character(), Principal=character(), Interest=character(), Balance=character())
     balance <- P
     
-    for(i in 1:min(5, as.numeric(input$loans_calc_term))) {
+    # Cap maximum iterations to prevent Shiny app crashing via memory overload
+    calc_limit <- min(600, as.numeric(input$loans_calc_term))
+    
+    for(i in 1:calc_limit) {
       interest_pmt <- balance * r
       principal_pmt <- emi - interest_pmt
       balance <- balance - principal_pmt
