@@ -42,6 +42,29 @@ This is the massive interface that the user actually sees. It is built utilizing
 ### 3. `loan_model.rds`
 The "Brain". This file contains the serialized, saved Logistic Regression machine learning matrices. `app.R` loads this immediately on launch into active memory to perform live probability generations.
 
+## 🔄 System Workflow (How It Works)
+
+To fully understand the project for your presentation, here is the exact chronological execution flow of the system:
+
+1. **Client Interaction**: 
+   A user accesses the server via their web browser and lands on the DASHBOARD. They transition to the **OFFERS** tab and fill out the interactive application details (e.g., ticking 'Graduate', sliding Income to ₹80,000, Requesting ₹500,000, and marking Credit History as 'Good').
+   
+2. **Data Marshaling**: 
+   Upon pressing the green `EVALUATE APPROVAL` button, the R Shiny framework (`app.R`) instantly wraps these individual demographic variables into an isolated, temporary R Dataframe structure identical to `train.csv`.
+   
+3. **Internal Normalization**: 
+   Just like during the initial training of the machine learning model, the `app.R` script immediately applies a `log(X + 1)` mathematical transform to the user's raw *Applicant Income*, *Coapplicant Income*, and *Loan Amount* to normalize the scales and compress extreme wealth outliers.
+
+4. **Live Algorithmic Inference**: 
+   The formatted dataframe is passed explicitly into `predict(model, newdata = d, type = "prob")`. The active Logistic Regression model (`loan_model.rds`) multiplies these inputs by its optimized historical feature weights, generating an exact floating-point probability score (e.g., `0.8524`).
+
+5. **Interface Mutation (The Output)**: 
+   The server intercepts the calculated probability output. If the algorithm determines the metric exceeds the risk threshold (> 50% Approval), it triggers a massive HTML/CSS state update:
+   * The probability gauge renders green and displays `85.24%`.
+   * The Decision Panel dynamically updates to display an **"Approved"** verdict.
+   * `Leaflet` kicks in, cross-referencing your chosen city on the interactive map to offer premium interest rates based on your verified low-risk status.
+   * Moving to the **LOANS** tab, the math engine actively compounds this new principal against the floating interest rate into an Amortization Table, instantly calculating your Equated Monthly Installment (EMI).
+
 ## 🚀 How to Run the Project
 To launch the beautiful graphical user interface:
 1. Open up your R console or VS Code Terminal.
