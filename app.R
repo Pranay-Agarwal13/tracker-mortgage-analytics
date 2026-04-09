@@ -490,7 +490,7 @@ server <- function(input, output, session) {
       Self_Employed = factor(input$self_employed, levels = c("", "No", "Yes")),
       ApplicantIncome = as.integer(input$applicant_income),
       CoapplicantIncome = as.numeric(input$coapplicant_income),
-      LoanAmount = as.numeric(input$loan_amount),
+      LoanAmount = as.numeric(input$loan_amount) / 1000,
       Loan_Amount_Term = as.numeric(input$loan_amount_term),
       Credit_History = factor(input$credit_history, levels = c("0", "1")),
       Property_Area = factor(input$property_area, levels = c("Rural", "Semiurban", "Urban"))
